@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/rogaliiik/bookstore/pkg/utils"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -14,13 +15,14 @@ var (
 
 // Create connection with Database
 func Connect() {
-
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		Conf.dbHost,
-		Conf.dbPort,
-		Conf.dbUser,
-		Conf.dbPassword,
-		Conf.dbName,
+	dbPassword := utils.GetEnvVar("POSTGRES_PASSWORD")
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		Conf.DB.Host,
+		Conf.DB.Port,
+		Conf.DB.User,
+		dbPassword,
+		Conf.DB.DBName,
+		Conf.DB.Sslmode,
 	)
 
 	d, err := gorm.Open("postgres", dsn)

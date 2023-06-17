@@ -2,13 +2,13 @@ package config
 
 import (
 	"log"
+	"os"
 
 	"github.com/joho/godotenv"
-
-	"github.com/rogaliiik/bookstore/pkg/utils"
+	"gopkg.in/yaml.v3"
 )
 
-var Conf *Config
+var Conf Config
 
 // Init config
 func init() {
@@ -16,45 +16,30 @@ func init() {
 		log.Print("No .env file found")
 	}
 
-	dbPassword := utils.GetEnvVar("POSTGRES_PASSWORD")
-	dbName := utils.GetEnvVar("DB_NAME")
-	dbUser := utils.GetEnvVar("DB_USER")
-	dbHost := utils.GetEnvVar("DB_HOST")
-	dbPort := utils.GetEnvVar("DB_PORT")
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Print(err)
+	}
+	configFile, err := os.ReadFile(wd + "/configs/config.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	dbConf := NewDBConfig(dbPassword, dbName, dbUser, dbHost, dbPort)
-
-	port := utils.GetEnvVar("PORT")
-
-	Conf = NewConfig(dbConf, port)
+	err = yaml.Unmarshal(configFile, &Conf)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 type Config struct {
-	*DBConfig
-	Port string
-}
-
-func NewConfig(dbConf *DBConfig, port string) *Config {
-	return &Config{
-		dbConf,
-		port,
-	}
+	Port string   `yaml:"port"`
+	DB   DBConfig `yaml:"db"`
 }
 
 type DBConfig struct {
-	dbPassword string
-	dbName     string
-	dbUser     string
-	dbHost     string
-	dbPort     string
-}
-
-func NewDBConfig(password string, name string, user string, host string, port string) *DBConfig {
-	return &DBConfig{
-		password,
-		name,
-		user,
-		host,
-		port,
-	}
+	User    string `yaml:"username"`
+	Host    string `yaml:"host"`
+	Port    string `yaml:"port"`
+	DBName  string `yaml:"dbname"`
+	Sslmode string `yaml:"sslmode"`
 }
