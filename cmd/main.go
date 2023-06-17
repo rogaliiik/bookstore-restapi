@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
+	"github.com/rogaliiik/bookstore/pkg/config"
 	"github.com/rogaliiik/bookstore/pkg/routes"
 )
 
@@ -17,6 +18,7 @@ func main() {
 	routes.RegisterBookStoreRoutes(router)
 
 	http.Handle("/", router)
-	fmt.Println("Server is working at localhost:8080")
-	log.Fatal(http.ListenAndServe("localhost:8080", router))
+	address := fmt.Sprintf(":%s", config.Conf.Port)
+	fmt.Println("Server is working at port: ", config.Conf.Port)
+	log.Fatal(http.ListenAndServe(address, router))
 }
