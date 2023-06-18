@@ -2,85 +2,89 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/rogaliiik/bookstore/pkg/repository"
+	"github.com/rogaliiik/bookstore/pkg/utils"
 	"log"
 	"net/http"
 	"strconv"
-
-	"github.com/gorilla/mux"
-	"github.com/rogaliiik/bookstore/pkg/utils"
 )
 
-func WriteJSONResponse(w http.ResponseWriter, res []byte) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+type Handler interface {
+	Handle(*http.Request) []byte
 }
 
-func GetAllBooks(w http.ResponseWriter, r *http.Request) {
+type GetAllBooksHandler struct{}
+
+func (h *GetAllBooksHandler) Handle(r *http.Request) []byte {
 	NewBooks := repository.Repo.GetAllBooks()
 
-	res, err := json.Marshal(NewBooks)
+	data, err := json.Marshal(NewBooks)
 	if err != nil {
 		log.Print(err)
 	}
-
-	WriteJSONResponse(w, res)
-
+	return data
 }
 
-func GetBookById(w http.ResponseWriter, r *http.Request) {
+type GetBookByIDHandler struct{}
+
+func (h *GetBookByIDHandler) Handle(r *http.Request) []byte {
 	vars := mux.Vars(r)
 	bookId := vars["bookId"]
 	ID, err := strconv.Atoi(bookId)
 	if err != nil {
-		fmt.Println("error while parsing")
+		log.Print(err)
 	}
 	bookDetails := repository.Repo.GetBookById(ID)
-	res, err := json.Marshal(bookDetails)
+	data, err := json.Marshal(bookDetails)
 	if err != nil {
 		log.Print(err)
 	}
-
-	WriteJSONResponse(w, res)
+	return data
 }
 
-func CreateBook(w http.ResponseWriter, r *http.Request) {
+type CreateBookHandler struct{}
+
+func (h *CreateBookHandler) Handle(r *http.Request) []byte {
 	newBook := &repository.Book{}
 	utils.ParseBody(r, newBook)
 	newBook = repository.Repo.CreateBook(newBook)
-	res, _ := json.Marshal(newBook)
-
-	WriteJSONResponse(w, res)
+	data, err := json.Marshal(newBook)
+	if err != nil {
+		log.Print(err)
+	}
+	return data
 }
 
-func DeleteBook(w http.ResponseWriter, r *http.Request) {
+type DeleteBookHandler struct{}
+
+func (h *DeleteBookHandler) Handle(r *http.Request) []byte {
 	vars := mux.Vars(r)
 	bookId := vars["bookId"]
 	ID, err := strconv.Atoi(bookId)
 	if err != nil {
-		fmt.Println("error while parsing")
+		log.Print(err)
 	}
 
 	deletedBook := repository.Repo.GetBookById(ID)
 	_ = repository.Repo.DeleteBook(ID)
-	res, err := json.Marshal(deletedBook)
+	data, err := json.Marshal(deletedBook)
 	if err != nil {
 		log.Print(err)
 	}
-
-	WriteJSONResponse(w, res)
+	return data
 }
 
-func UpdateBook(w http.ResponseWriter, r *http.Request) {
+type UpdateBookHandler struct{}
+
+func (h *UpdateBookHandler) Handle(r *http.Request) []byte {
 	var updateBook = &repository.Book{}
 	utils.ParseBody(r, updateBook)
 	vars := mux.Vars(r)
 	bookId := vars["bookId"]
 	ID, err := strconv.Atoi(bookId)
 	if err != nil {
-		fmt.Println("error while parsing")
+		log.Print(err)
 	}
 	bookDetails := repository.Repo.GetBookById(ID)
 
@@ -94,10 +98,9 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 		bookDetails.Publication = updateBook.Publication
 	}
 	repository.Repo.DB.Save(&bookDetails)
-	res, err := json.Marshal(bookDetails)
+	data, err := json.Marshal(bookDetails)
 	if err != nil {
 		log.Print(err)
 	}
-
-	WriteJSONResponse(w, res)
+	return data
 }
