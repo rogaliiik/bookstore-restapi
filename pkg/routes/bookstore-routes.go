@@ -5,7 +5,6 @@ import (
 	"github.com/rogaliiik/bookstore/pkg/controllers"
 )
 
-// All routes and methods
 var RegisterBookStoreRoutes = func(router *mux.Router) {
 	router.HandleFunc("/book", controllers.CreateBook).Methods("POST")
 	router.HandleFunc("/book", controllers.GetAllBooks).Methods("GET")

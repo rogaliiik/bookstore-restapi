@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 
 	"github.com/rogaliiik/bookstore/pkg/config"
 	"github.com/rogaliiik/bookstore/pkg/routes"
@@ -19,6 +18,6 @@ func main() {
 
 	http.Handle("/", router)
 	address := fmt.Sprintf(":%s", config.Conf.Port)
-	fmt.Println("Server is working at port: ", config.Conf.Port)
+	fmt.Println("Server is working at port:", config.Conf.Port)
 	log.Fatal(http.ListenAndServe(address, router))
 }

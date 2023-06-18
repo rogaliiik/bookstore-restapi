@@ -10,7 +10,6 @@ import (
 
 var Conf Config
 
-// Init config
 func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Print("No .env file found")
