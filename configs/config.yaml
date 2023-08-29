@@ -1,7 +1,7 @@
 port: 8080
 db:
   username: postgres
-  host: database
+  host: bookstore_postgres # for docker-compose using if deploy locally use "localhost"
   port: 5432
   dbname: postgres
   sslmode: disable

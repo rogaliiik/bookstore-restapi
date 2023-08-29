@@ -4,16 +4,17 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
 )
 
 var Conf Config
 
 func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Print("No .env file found")
-	}
+	// Can be used to hide env vars from docker-compose
+
+	//if err := godotenv.Load(); err != nil {
+	//	log.Print("No .env file found")
+	//}
 
 	wd, err := os.Getwd()
 	if err != nil {
